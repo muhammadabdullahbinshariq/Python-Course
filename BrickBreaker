@@ -1,0 +1,75 @@
+import turtle
+import random
+import time
+
+# --- Setup Screen ---
+screen = turtle.Screen()
+screen.bgcolor("black")
+screen.setup(width=600, height=600)
+screen.tracer(0) # Turns off animation for smoother movement
+
+# --- Create Bricks ---
+bricks = []
+for _ in range(20):
+    b = turtle.Turtle()
+    b.shape("square")
+    b.color("white")
+    b.penup()
+    b.goto(random.randint(-280, 280), random.randint(100, 280))
+    bricks.append(b)
+
+# --- Create Paddle ---
+paddle = turtle.Turtle()
+paddle.shape("square")
+paddle.color("blue")
+paddle.shapesize(stretch_wid=1, stretch_len=5)
+paddle.penup()
+paddle.goto(0, -250)
+
+# --- Create Ball ---
+ball = turtle.Turtle()
+ball.shape("circle")
+ball.color("red")
+ball.penup()
+ball.goto(0, 0)
+ball_dx = 3  # Horizontal speed
+ball_dy = -3 # Vertical speed
+
+# --- Paddle Movement ---
+def move_left():
+    x = paddle.xcor()
+    if x > -250: paddle.setx(x - 30)
+
+def move_right():
+    x = paddle.xcor()
+    if x < 250: paddle.setx(x + 30)
+
+screen.listen()
+screen.onkeypress(move_left, "Left") # onkeypress is better for smooth movement
+screen.onkeypress(move_right, "Right")
+
+# --- Main Game Loop ---
+while True:
+    screen.update() # This is required because of screen.tracer(0)
+    time.sleep(0.01)
+
+    # Move the ball
+    ball.setx(ball.xcor() + ball_dx)
+    ball.sety(ball.ycor() + ball_dy)
+
+    # Wall Bouncing
+    if ball.xcor() > 290 or ball.xcor() < -290: ball_dx *= -1
+    if ball.ycor() > 290: ball_dy *= -1
+    if ball.ycor() < -290: ball.goto(0, 0); ball_dy *= -1 # Reset if missed
+
+    # Paddle Collision
+    if (ball.ycor() < -230 and ball.ycor() > -240) and (paddle.xcor() - 60 < ball.xcor() < paddle.xcor() + 60):
+        ball_dy *= -1
+
+    # Brick Collision (The "Breaking" Logic)
+    for brick in bricks:
+        if ball.distance(brick) < 25: # Check if ball is close to a brick
+            brick.goto(1000, 1000) # Move brick off-screen to "break" it
+            bricks.remove(brick)   # Remove from list so it doesn't collide again
+            ball_dy *= -1          # Bounce ball back
+            break # Exit loop for this frame after one hit
