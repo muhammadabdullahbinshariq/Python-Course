@@ -1,0 +1,49 @@
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+df = sns.load_dataset('planets')
+df = df.dropna()
+
+print("--- First 5 rows of 'planets' dataframe ---")
+print(df.head())
+print()
+print("--- Information regarding 'planets' dataframe ---")
+print(df.info())
+print()
+print("--- Describing 'planets' dataframe ---")
+print(df.describe())
+print()
+print("--- Unique Discovery Methods ---")
+print(df["method"].unique())
+
+sns.histplot(data = df, x = 'orbital_period', bins = 20, color = 'silver')
+plt.title("Distribution of Orbital Periods of Other Planets")
+plt.xlabel("Orbital Period (Days)")
+plt.ylabel("Count (Number of Planets)")
+plt.grid(True)
+plt.show()
+
+sns.kdeplot(data = df, x = 'distance', fill = True, hue = 'method')
+plt.title("Distribution of Distance of Other Planets")
+plt.xlabel("Distance (Parsecs)")
+plt.ylabel("Density")
+plt.show()
+
+sns.histplot(data = df, x = 'distance', fill = True, kde = True)
+plt.title("Distribution of Distance of Other Planets")
+plt.xlabel("Distance (Parsecs)")
+plt.ylabel("Count")
+plt.grid(True)
+plt.show()
+
+sns.scatterplot(data = df, x = 'distance', y = 'orbital_period', hue = 'year', palette = 'viridis', s = 100)
+plt.title("Finding Relationship between Distance and Orbital Period")
+plt.xlabel("Distance (Parsecs)")
+plt.ylabel("Orbital Period (Days)")
+plt.grid(True)
+plt.show()
+
+correlation = df.corr(numeric_only = True)
+sns.heatmap(correlation, annot = True, cmap = "coolwarm", linewidths = 0.5)
+plt.title("Correlation Heatmap of Exoplanet Features")
+plt.show()
